@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  require 'sidekiq/web'
+
+  mount Sidekiq::Web => '/sidekiq'
+  
   get 'endangered/index'
   get 'home/index'
   get 'endangered/data', to: 'endangered#data'

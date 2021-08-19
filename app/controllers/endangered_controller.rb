@@ -1,9 +1,12 @@
 class EndangeredController < ApplicationController
   before_action :set_endangered, only: [:index, :data]
-  
+
   def index
-    return redirect_to engangered_data_path if @endangered < 0
-    render 'index'
+    if @endangered.length > 0
+      redirect_to endangered_data_path
+    else
+      render 'index'
+    end
   end
 
   def data
@@ -11,8 +14,10 @@ class EndangeredController < ApplicationController
 
   def upload
     csv_file = File.join Rails.root, 'db', 'sharks.csv'
-    AddEndangeredWorker.perform_async(csv_file)
-    redirect_to engangered_data_path, notice: "Endangered sharks have been uploaded!"
+    10.times do
+      AddEndangeredWorker.perform_async(csv_file)
+    end
+    redirect_to endangered_data_path, notice: 'Endangered sharks have been uploaded!'
   end
 
   def destroy
@@ -22,7 +27,8 @@ class EndangeredController < ApplicationController
 
   private
 
-  def set_endangered
-    @endangered = Endangered.all
-  end
+    def set_endangered
+      @endangered = Endangered.all
+    end
+
 end
